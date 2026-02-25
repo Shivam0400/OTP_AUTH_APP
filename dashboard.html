@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#4facfe">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta charset="UTF-8">
+<title>Dashboard | OTP App</title>
+<link rel="icon" type="image/png" href="dashboard.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Particles -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+<style>
+
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+}
+
+/* THEME */
+:root{
+  --bg:#0f2027;
+  --card:rgba(255,255,255,0.12);
+  --text:white;
+  --accent:#4facfe;
+}
+
+.light{
+  --bg:#f4f6f9;
+  --card:white;
+  --text:#111;
+  --accent:#2b7cff;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  opacity:0;
+  transition:.5s;
+}
+
+body.loaded{opacity:1}
+
+/* PARTICLES */
+#particles-js{
+  position:fixed;
+  width:100%;
+  height:100%;
+  z-index:-1;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar{
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(15px);
+  padding:12px 25px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:bold;
+}
+
+.nav-links{
+  display:flex;
+  gap:18px;
+}
+
+.nav-links a{
+  color:white;
+  text-decoration:none;
+  padding:6px 12px;
+  border-radius:8px;
+  transition:.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active{
+  background:linear-gradient(135deg,#00f2fe,#4facfe);
+  color:#03131a;
+}
+
+.menu-btn{
+  display:none;
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+  .menu-btn{display:block}
+
+  .nav-links{
+    position:absolute;
+    top:60px;
+    left:0;
+    width:100%;
+    background:#000c;
+    flex-direction:column;
+    display:none;
+  }
+
+  .nav-links a{
+    padding:15px;
+    border-bottom:1px solid #ffffff15;
+  }
+
+  .nav-links.active{
+    display:flex;
+  }
+}
+
+/* ================= MAIN ================= */
+
+.main{
+  padding:40px 20px;
+  max-width:1200px;
+  margin:auto;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:25px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+
+.card{
+  background:var(--card);
+  backdrop-filter:blur(15px);
+  padding:25px;
+  border-radius:15px;
+  border:1px solid rgba(255,255,255,0.2);
+  text-align:center;
+  transition:.3s;
+}
+
+.card:hover{
+  transform:translateY(-6px);
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="particles-js"></div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+
+  <div class="logo">🔥 OTP App</div>
+
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+  <div class="nav-links" id="navLinks">
+
+  <a href="dashboard.html" class="active">Dashboard</a>
+  <a href="about.html">About</a>
+  <a href="profile.html">Profile</a>
+
+  <!-- ADMIN -->
+  <a href="admin.html" id="adminLink" style="display:none;">
+    Admin
+  </a>
+
+  <a href="#" onclick="toggleTheme()">Theme</a>
+  <a href="#" onclick="logout()">Logout</a>
+<button id="installBtn" style="display:none;">
+📲 Install App
+</button>
+</div>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="topbar">
+  <h2>Dashboard</h2>
+  <span>🟢 Online</span>
+</div>
+
+<h1>Welcome, <span id="userName">User</span> 👋</h1>
+<p style="opacity:.8;margin-bottom:25px;">Secure Authentication Platform</p>
+
+<div class="cards">
+
+  <div class="card">
+    <h3>👥 Total Users</h3>
+    <h2 id="totalUsers">0</h2>
+  </div>
+
+  <div class="card">
+    <h3>⏰ Last Login</h3>
+    <h2 id="lastLogin">--</h2>
+  </div>
+
+  <div class="card">
+    <h3>🛡 Role</h3>
+    <h2 id="role">User</h2>
+  </div>
+
+  <div class="card">
+    <h3>☁ Database</h3>
+    <h2>Connected</h2>
+  </div>
+
+</div>
+
+</div>
+
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+
+var firebaseConfig = {
+  apiKey: "AIzaSyDO-fBwp3X7pdEA_FJcfyKW0PEHu3asfX0",
+  authDomain: "otp-login-75f51.firebaseapp.com",
+  projectId: "otp-login-75f51"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+var auth = firebase.auth();
+var db = firebase.firestore();
+
+/* PAGE LOAD */
+window.onload = () => {
+  document.body.classList.add("loaded");
+};
+
+/* MENU */
+function toggleMenu(){
+  document.getElementById("navLinks").classList.toggle("active");
+}
+
+/* THEME */
+function toggleTheme(){
+  document.body.classList.toggle("light");
+}
+
+/* LOGOUT */
+function logout(){
+  auth.signOut();
+  location.href="index.html";
+}
+
+/* AUTH CHECK */
+auth.onAuthStateChanged(user=>{
+
+  if(!user){
+    location.href="index.html";
+    return;
+  }
+
+  db.collection("users").doc(user.uid).get()
+  .then(doc=>{
+
+    if(!doc.exists) return;
+
+    let d = doc.data();
+
+    userName.innerText = d.name || "User";
+
+    if(d.lastLogin){
+      lastLogin.innerText =
+        d.lastLogin.toDate().toLocaleString();
+    }
+
+    role.innerText = d.role || "User";
+
+    /* SHOW ADMIN */
+    if(d.role === "admin"){
+      document.getElementById("adminLink").style.display="block";
+    }
+
+  });
+
+  /* USERS COUNT */
+  db.collection("users").onSnapshot(snap=>{
+    totalUsers.innerText = snap.size;
+  });
+
+});
+
+</script>
+
+
+<script>
+particlesJS("particles-js", {
+  particles: {
+    number: {
+      value: 70,
+      density: {
+        enable: true,
+        value_area: 800
+      }
+    },
+
+    color: {
+      value: "#4facfe"
+    },
+
+    shape: {
+      type: "circle"
+    },
+
+    opacity: {
+      value: 0.5
+    },
+
+    size: {
+      value: 3,
+      random: true
+    },
+
+    line_linked: {
+      enable: true,
+      distance: 140,
+      color: "#4facfe",
+      opacity: 0.4,
+      width: 1
+    },
+
+    move: {
+      enable: true,
+      speed: 1.8,
+      out_mode: "out"
+    }
+  },
+
+  interactivity: {
+    events: {
+      onhover: {
+        enable: true,
+        mode: "grab"
+      },
+      onclick: {
+        enable: true,
+        mode: "push"
+      }
+    }
+  },
+
+  retina_detect: true
+});
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("sw.js")
+      .then(() => console.log("PWA Ready"))
+      .catch(err => console.log(err));
+  });
+}
+</script>
+<script>
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  document.getElementById("installBtn").style.display = "block";
+});
+
+document.getElementById("installBtn").addEventListener("click", async () => {
+
+  if (!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+
+  const result = await deferredPrompt.userChoice;
+
+  if (result.outcome === "accepted") {
+    console.log("Installed");
+  }
+
+  deferredPrompt = null;
+});
+</script>
+</body>
+</html>

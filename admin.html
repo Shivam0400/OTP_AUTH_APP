@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#4facfe">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<link rel="icon" type="image/png" href="admin.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Particles -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+<style>
+
+/* ================= RESET ================= */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+}
+
+/* ================= THEME ================= */
+:root{
+  --bg:#0f2027;
+  --card:rgba(255,255,255,0.12);
+  --text:white;
+  --accent:#4facfe;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+
+/* ================= PARTICLES ================= */
+#particles-js{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+}
+
+/* ================= LAYOUT ================= */
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar{
+  width:240px;
+  background:linear-gradient(180deg,#0a1a22,#020b10);
+  backdrop-filter:blur(18px);
+  padding:25px 15px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  border-right:1px solid rgba(255,255,255,0.08);
+  box-shadow:4px 0 25px rgba(0,0,0,0.6);
+}
+
+.sidebar h2{
+  font-size:22px;
+  margin-bottom:35px;
+  font-weight:700;
+  background:linear-gradient(45deg,#00f2fe,#4facfe);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* Sidebar Buttons */
+.sidebar button{
+  width:100%;
+  padding:13px;
+  margin:7px 0;
+  border:none;
+  border-radius:12px;
+  background:rgba(79,172,254,0.12);
+  color:white;
+  cursor:pointer;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition:.3s;
+}
+
+.sidebar button:hover{
+  background:linear-gradient(135deg,#00f2fe,#4facfe);
+  color:#03131a;
+  box-shadow:0 4px 15px rgba(79,172,254,.4);
+}
+
+/* ================= MAIN ================= */
+.main{
+  flex:1;
+  padding:30px;
+  overflow:auto;
+}
+
+/* ================= HEADER ================= */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+.header h1{
+  font-size:26px;
+}
+
+/* ================= CARD ================= */
+.card{
+  background:var(--card);
+  backdrop-filter:blur(18px);
+  border-radius:18px;
+  padding:25px;
+  border:1px solid rgba(255,255,255,.2);
+}
+
+/* ================= TABLE ================= */
+.table-box{
+  width:100%;
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:700px;
+}
+
+th,td{
+  padding:12px;
+  text-align:center;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
+
+th{
+  background:rgba(0,0,0,.4);
+  font-weight:600;
+}
+
+tr:hover{
+  background:rgba(255,255,255,.05);
+}
+
+/* ================= BUTTONS ================= */
+.btn{
+  padding:6px 10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:12px;
+  margin:2px;
+}
+
+.promote{
+  background:#4caf50;
+  color:white;
+}
+
+.demote{
+  background:#ff9800;
+  color:black;
+}
+
+.delete{
+  background:#f44336;
+  color:white;
+}
+
+.notify{
+  background:#2196f3;
+  color:white;
+}
+
+/* ================= MOBILE ================= */
+@media(max-width:768px){
+
+  .app{
+    flex-direction:column;
+  }
+
+  .sidebar{
+    width:100%;
+    flex-direction:row;
+    justify-content:space-around;
+    padding:15px;
+  }
+
+  .sidebar h2{
+    display:none;
+  }
+
+  .sidebar button{
+    width:auto;
+    padding:10px 14px;
+  }
+
+  .header h1{
+    font-size:22px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Particles -->
+<div id="particles-js"></div>
+
+<div class="app">
+
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+
+  <h2>👑 Admin</h2>
+
+  <button onclick="goDashboard()">🏠 Dashboard</button>
+
+  <button onclick="logout()">🚪 Logout</button>
+
+</div>
+
+<!-- ================= MAIN ================= -->
+<div class="main">
+
+<!-- Header -->
+<div class="header">
+  <h1>Admin Control Panel</h1>
+  <span>🟢 Online</span>
+</div>
+
+<!-- Card -->
+<div class="card">
+
+  <h3 style="margin-bottom:15px;">👥 User Management</h3>
+
+  <div class="table-box">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody id="userTable"></tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= FIREBASE ================= -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+
+var firebaseConfig = {
+  apiKey: "AIzaSyDO-fBwp3X7pdEA_FJcfyKW0PEHu3asfX0",
+  authDomain: "otp-login-75f51.firebaseapp.com",
+  projectId: "otp-login-75f51",
+  storageBucket: "otp-login-75f51.appspot.com",
+  messagingSenderId: "931034940344",
+  appId: "1:931034940344:web:072fb650d656c38da0054d"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+var auth = firebase.auth();
+var db   = firebase.firestore();
+
+
+/* ================= ADMIN CHECK ================= */
+auth.onAuthStateChanged(user=>{
+
+  if(!user){
+    location.href="index.html";
+    return;
+  }
+
+  db.collection("users").doc(user.uid).get().then(doc=>{
+
+    if(!doc.exists || doc.data().role !== "admin"){
+      alert("Access Denied ❌");
+      location.href="dashboard.html";
+    }else{
+      loadUsers();
+    }
+
+  });
+
+});
+
+
+/* ================= LOAD USERS ================= */
+function loadUsers(){
+
+  db.collection("users").onSnapshot(snapshot=>{
+
+    let html="";
+
+    snapshot.forEach(doc=>{
+
+      let d = doc.data();
+      let uid = doc.id;
+
+      html += `
+        <tr>
+
+          <td>${d.name || "-"}</td>
+          <td>${d.phone || "-"}</td>
+          <td>${d.role || "user"}</td>
+
+          <td>
+
+            <button class="btn promote"
+              onclick="makeAdmin('${uid}')">
+              Admin
+            </button>
+
+            <button class="btn demote"
+              onclick="removeAdmin('${uid}')">
+              User
+            </button>
+
+            <button class="btn notify"
+              onclick="sendNotify('${uid}')">
+              Notify
+            </button>
+
+            <button class="btn delete"
+              onclick="deleteUser('${uid}')">
+              Delete
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+
+    });
+
+    document.getElementById("userTable").innerHTML = html;
+
+  });
+
+}
+
+
+/* ================= ACTIONS ================= */
+
+function makeAdmin(uid){
+
+  if(confirm("Make this user Admin?")){
+    db.collection("users").doc(uid).update({ role:"admin" });
+  }
+
+}
+
+function removeAdmin(uid){
+
+  if(confirm("Remove Admin role?")){
+    db.collection("users").doc(uid).update({ role:"user" });
+  }
+
+}
+
+function deleteUser(uid){
+
+  if(confirm("Delete user permanently?")){
+    db.collection("users").doc(uid).delete();
+  }
+
+}
+
+function sendNotify(uid){
+
+  let msg = prompt("Enter notification:");
+
+  if(msg){
+
+    db.collection("notifications").add({
+      uid,
+      message:msg,
+      time:firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+  }
+
+}
+
+
+/* ================= NAV ================= */
+
+function goDashboard(){
+  location.href="dashboard.html";
+}
+
+function logout(){
+  auth.signOut();
+  location.href="index.html";
+}
+
+</script>
+
+
+<!-- ================= PARTICLES ================= -->
+<script>
+particlesJS("particles-js",{
+  particles:{
+    number:{value:70},
+    color:{value:"#4facfe"},
+    size:{value:3},
+    move:{speed:2},
+    line_linked:{
+      enable:true,
+      color:"#4facfe"
+    }
+  }
+});
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("sw.js")
+      .then(() => console.log("PWA Ready"))
+      .catch(err => console.log(err));
+  });
+}
+</script>
+</body>
+</html>

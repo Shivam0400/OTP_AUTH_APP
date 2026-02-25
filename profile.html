@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#4facfe">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta charset="UTF-8">
+<title>Profile | OTP App</title>
+<link rel="icon" type="image/png" href="user_profile.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+<style>
+
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+}
+
+/* THEME */
+:root{
+  --bg:#0f2027;
+  --card:rgba(255,255,255,0.12);
+  --text:white;
+  --accent:#4facfe;
+}
+
+.light{
+  --bg:#f4f6f9;
+  --card:white;
+  --text:#111;
+  --accent:#2b7cff;
+}
+
+/* BODY */
+body{
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  opacity:0;
+  transition:.6s ease;
+}
+
+body.loaded{
+  opacity:1;
+}
+
+/* PARTICLES */
+#particles-js{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+}
+
+/* LAYOUT */
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:240px;
+  background:linear-gradient(180deg,#0a1a22,#020b10);
+  backdrop-filter:blur(18px);
+  padding:25px 15px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  border-right:1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar h2{
+  font-size:22px;
+  margin-bottom:35px;
+  background:linear-gradient(45deg,#00f2fe,#4facfe);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* NAV BUTTONS */
+.sidebar button{
+  width:100%;
+  padding:13px;
+  margin:8px 0;
+  border:none;
+  border-radius:12px;
+  background:rgba(79,172,254,.15);
+  color:white;
+  cursor:pointer;
+  font-size:15px;
+  transition:.3s;
+}
+
+.sidebar button:hover{
+  background:linear-gradient(135deg,#00f2fe,#4facfe);
+  color:#03131a;
+}
+
+.sidebar button.active{
+  background:linear-gradient(135deg,#00f2fe,#4facfe);
+  color:#03131a;
+}
+
+/* MAIN */
+.main{
+  flex:1;
+  padding:30px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* PROFILE CARD */
+.card{
+  width:100%;
+  max-width:420px;
+  background:var(--card);
+  backdrop-filter:blur(16px);
+  padding:28px;
+  border-radius:18px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.2);
+}
+
+/* AVATAR */
+.avatar-box{
+  position:relative;
+  width:130px;
+  height:130px;
+  margin:0 auto 15px;
+}
+
+.avatar-box img{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid var(--accent);
+  background:#111;
+}
+
+/* INPUT */
+input{
+  width:100%;
+  padding:9px;
+  margin:6px 0;
+  border:none;
+  border-radius:6px;
+}
+
+/* ACTION BTN */
+.action{
+  width:100%;
+  margin-top:8px;
+  padding:9px;
+  border:none;
+  border-radius:7px;
+  background:linear-gradient(135deg,#00f2fe,#4facfe);
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* INFO */
+.info{
+  margin-top:12px;
+  font-size:14px;
+  opacity:.9;
+  text-align:left;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+  .app{
+    flex-direction:column;
+  }
+
+  .sidebar{
+    width:100%;
+    flex-direction:row;
+    justify-content:space-around;
+    padding:12px;
+  }
+
+  .sidebar h2{
+    display:none;
+  }
+
+  .sidebar button{
+    width:auto;
+    padding:8px 12px;
+    font-size:13px;
+  }
+
+  .main{
+    padding:15px;
+    align-items:flex-start;
+  }
+
+  .card{
+    margin-top:20px;
+  }
+
+}
+/* ================= SKELETON ================= */
+
+.skeleton{
+  background:linear-gradient(
+    90deg,
+    rgba(255,255,255,.08) 25%,
+    rgba(255,255,255,.2) 37%,
+    rgba(255,255,255,.08) 63%
+  );
+  background-size:400% 100%;
+  animation:shine 1.4s ease infinite;
+  border-radius:6px;
+}
+
+@keyframes shine{
+  to{
+    background-position: -400% 0;
+  }
+}
+
+.skel-avatar{
+  width:130px;
+  height:130px;
+  border-radius:50%;
+  margin:0 auto 15px;
+}
+
+.skel-line{
+  height:14px;
+  margin:8px 0;
+}
+
+.skel-btn{
+  height:36px;
+  margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="particles-js"></div>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+  <h2>🔥 OTP App</h2>
+
+  <button class="active" onclick="goProfile()">👤 Profile</button>
+  <button onclick="goAbout()">ℹ️ About</button>
+  <button onclick="toggleTheme()">🌙 Theme</button>
+  <button onclick="logout()">🚪 Logout</button>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="card">
+
+<!-- ================= SKELETON ================= -->
+<div id="skeleton">
+
+  <div class="skeleton skel-avatar"></div>
+
+  <div class="skeleton skel-line"></div>
+  <div class="skeleton skel-line"></div>
+
+  <div class="skeleton skel-btn"></div>
+  <div class="skeleton skel-btn"></div>
+
+  <div class="skeleton skel-line"></div>
+  <div class="skeleton skel-line"></div>
+  <div class="skeleton skel-line"></div>
+
+</div>
+
+<!-- ================= REAL CONTENT ================= -->
+<div id="profileData" style="display:none;">
+
+<h2>👤 My Profile</h2>
+
+<div class="avatar-box">
+  <img id="avatar" src="https://via.placeholder.com/150">
+</div>
+
+<input type="file" id="photo">
+
+<button class="action" onclick="uploadPhoto()">
+Upload Photo
+</button>
+
+<hr style="margin:15px 0;opacity:.3">
+
+<input id="nameInput" disabled>
+
+<button class="action" onclick="editName()">
+✏️ Edit Name
+</button>
+
+<div class="info">
+<p>📱 <span id="phone">--</span></p>
+<p>🆔 <span id="uid">--</span></p>
+<p>⏰ <span id="lastLogin">--</span></p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+<script>
+
+var firebaseConfig = {
+  apiKey: "AIzaSyDO-fBwp3X7pdEA_FJcfyKW0PEHu3asfX0",
+  authDomain: "otp-login-75f51.firebaseapp.com",
+  projectId: "otp-login-75f51",
+  storageBucket: "otp-login-75f51.appspot.com"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+var auth = firebase.auth();
+var db = firebase.firestore();
+var storage = firebase.storage();
+
+/* PAGE LOAD */
+window.onload = ()=>{
+  document.body.classList.add("loaded");
+};
+
+/* THEME */
+function toggleTheme(){
+  document.body.classList.toggle("light");
+}
+
+auth.onAuthStateChanged(user=>{
+
+  if(!user){
+    location.href="index.html";
+    return;
+  }
+
+  uid.innerText = user.uid;
+
+  // Show Skeleton
+  document.getElementById("skeleton").style.display="block";
+  document.getElementById("profileData").style.display="none";
+
+  db.collection("users").doc(user.uid)
+  .onSnapshot(doc=>{
+
+    if(!doc.exists) return;
+
+    let d = doc.data();
+
+    nameInput.value = d.name || "";
+    phone.innerText = d.phone || "--";
+
+    if(d.photo){
+      avatar.src = d.photo;
+    }
+
+    if(d.lastLogin){
+      lastLogin.innerText =
+        d.lastLogin.toDate().toLocaleString();
+    }
+
+    // Hide Skeleton → Show Data
+    document.getElementById("skeleton").style.display="none";
+    document.getElementById("profileData").style.display="block";
+
+  });
+
+});
+
+/* EDIT NAME */
+function editName(){
+
+let i = nameInput;
+
+if(i.disabled){
+
+  i.disabled=false;
+  i.focus();
+
+}else{
+
+  i.disabled=true;
+
+  db.collection("users")
+  .doc(auth.currentUser.uid)
+  .update({ name:i.value });
+
+  alert("Name Updated ✅");
+}
+
+}
+
+/* UPLOAD PHOTO */
+function uploadPhoto(){
+
+let file = photo.files[0];
+
+if(!file){
+  alert("Select image");
+  return;
+}
+
+let uid = auth.currentUser.uid;
+
+let ref = storage.ref("avatars/"+uid);
+
+ref.put(file).then(()=>{
+
+  ref.getDownloadURL().then(url=>{
+
+    db.collection("users")
+    .doc(uid)
+    .update({ photo:url });
+
+    avatar.src = url;
+
+  });
+
+});
+
+}
+
+/* NAV */
+function goAbout(){
+  location.href="about.html";
+}
+
+function goProfile(){
+  location.href="profile.html";
+}
+
+function logout(){
+  auth.signOut();
+  location.href="index.html";
+}
+
+</script>
+
+
+<!-- PARTICLES (UNCHANGED) -->
+<script>
+particlesJS("particles-js", {
+  particles: {
+    number:{value:80,density:{enable:true,value_area:900}},
+    color:{value:"#4facfe"},
+    shape:{type:"circle"},
+    opacity:{value:0.5},
+    size:{value:3,random:true},
+    line_linked:{
+      enable:true,
+      distance:150,
+      color:"#4facfe",
+      opacity:0.4,
+      width:1
+    },
+    move:{
+      enable:true,
+      speed:1.5,
+      out_mode:"out"
+    }
+  },
+  interactivity:{
+    events:{
+      onhover:{enable:true,mode:"grab"},
+      onclick:{enable:true,mode:"push"}
+    }
+  },
+  retina_detect:true
+});
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("sw.js")
+      .then(() => console.log("PWA Ready"))
+      .catch(err => console.log(err));
+  });
+}
+</script>
+</body>
+</html>

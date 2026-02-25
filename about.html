@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#4facfe">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta charset="UTF-8">
+<title>About | OTP App</title>
+<link rel="icon" type="image/png" href="about.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Particles -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+<style>
+
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+}
+
+:root{
+  --bg:#0f2027;
+  --card:rgba(255,255,255,0.12);
+  --text:white;
+  --accent:#4facfe;
+}
+
+.light{
+  --bg:#f4f6f9;
+  --card:white;
+  --text:#111;
+  --accent:#2b7cff;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-y:auto;
+}
+
+/* PARTICLES */
+#particles-js{
+  position:fixed;
+  width:100%;
+  height:100%;
+  z-index:-1;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar{
+  width:100%;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(15px);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 25px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:bold;
+}
+
+.nav-links{
+  display:flex;
+  gap:20px;
+}
+
+.nav-links a{
+  text-decoration:none;
+  color:white;
+  padding:6px 12px;
+  border-radius:8px;
+  transition:.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active{
+  background:linear-gradient(135deg,#00f2fe,#4facfe);
+  color:#03131a;
+}
+
+.menu-btn{
+  display:none;
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+  .menu-btn{
+    display:block;
+  }
+
+  .nav-links{
+    position:absolute;
+    top:60px;
+    left:0;
+    width:100%;
+    background:rgba(0,0,0,0.9);
+    flex-direction:column;
+    text-align:center;
+    display:none;
+  }
+
+  .nav-links a{
+    padding:15px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+  }
+
+  .nav-links.active{
+    display:flex;
+  }
+}
+
+/* ================= MAIN CONTENT ================= */
+
+.main{
+  padding:50px 20px;
+  animation:fade .6s ease;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+.about-box{
+  max-width:900px;
+  margin:auto;
+  background:var(--card);
+  backdrop-filter:blur(18px);
+  padding:40px;
+  border-radius:25px;
+  border:1px solid rgba(255,255,255,0.25);
+}
+
+/* PROFILE */
+.profile{
+  text-align:center;
+  margin-bottom:35px;
+}
+
+.profile img{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  border:4px solid var(--accent);
+  object-fit:cover;
+  margin-bottom:15px;
+}
+
+.profile h1{
+  margin-bottom:5px;
+}
+
+.profile p{
+  opacity:.8;
+}
+
+/* SOCIAL */
+.socials{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin-top:15px;
+}
+
+.socials a{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:rgba(79,172,254,.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:20px;
+  transition:.3s;
+}
+
+.socials a:hover{
+  background:var(--accent);
+  color:#03131a;
+  transform:scale(1.15);
+}
+
+/* SECTION */
+.section{
+  margin:30px 0;
+}
+
+.section h3{
+  margin-bottom:12px;
+  color:var(--accent);
+}
+
+.section p{
+  line-height:1.7;
+  opacity:.9;
+}
+
+/* CONNECT BUTTON */
+.connect-btn{
+  display:block;
+  margin:40px auto 0;
+  padding:12px 30px;
+  border:none;
+  border-radius:25px;
+  background:linear-gradient(135deg,#00f2fe,#4facfe);
+  color:#03131a;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.connect-btn:hover{
+  transform:scale(1.05);
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:2000;
+}
+
+.modal-box{
+  width:90%;
+  max-width:400px;
+  background:#0f2027;
+  padding:25px;
+  border-radius:15px;
+  position:relative;
+  animation:popup .4s ease;
+}
+
+@keyframes popup{
+  from{transform:scale(.7);opacity:0;}
+  to{transform:scale(1);opacity:1;}
+}
+
+.close-btn{
+  position:absolute;
+  top:10px;
+  right:15px;
+  cursor:pointer;
+  font-size:20px;
+}
+
+.modal-box input,
+.modal-box textarea{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:none;
+  border-radius:6px;
+}
+
+.modal-box button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  background:linear-gradient(135deg,#00f2fe,#4facfe);
+  font-weight:bold;
+  cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="particles-js"></div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+
+  <div class="logo">🔥 OTP App</div>
+
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+  <div class="nav-links" id="navLinks">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="about.html" class="active">About</a>
+    <a href="profile.html">Profile</a>
+    <a href="#" onclick="toggleTheme()">Theme</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="about-box">
+
+<div class="profile">
+<img src="profile.jpg">
+<h1>Shivam Sony</h1>
+<p>Web Developer | Firebase | UI Designer</p>
+
+<div class="socials">
+<a href="https://github.com/Shivam0400" target="_blank"><i class="fab fa-github"></i></a>
+<a href="https://linkedin.com/in/shivam-jaiswal04" target="_blank"><i class="fab fa-linkedin"></i></a>
+<a href="mailto:shivamjais.op09@gmail.com"><i class="fas fa-envelope"></i></a>
+<a href="https://shivam-portfolio-main.vercel.app/" target="_blank"><i class="fab fa-user"></i></a>
+
+</div>
+</div>
+
+<div class="section">
+<h3>🙋 About Me</h3>
+<p>Hi, I'm Shivam Sony, a passionate web developer focused on building secure and modern web applications using Firebase and JavaScript.</p>
+</div>
+
+<div class="section">
+<h3>🚀 About OTP App</h3>
+<p>OTP App is a secure authentication platform using Firebase Phone Authentication providing safe login and user management.</p>
+</div>
+
+<button class="connect-btn" onclick="openContact()">💬 Connect With Me</button>
+
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="contactModal">
+  <div class="modal-box">
+    <span class="close-btn" onclick="closeContact()">✖</span>
+    <h3>Contact Me</h3>
+    <form onsubmit="sendMail(event)">
+      <input type="text" id="cname" placeholder="Your Name" required>
+      <input type="email" id="cemail" placeholder="Your Email" required>
+      <textarea id="cmsg" rows="4" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+<script>
+
+var firebaseConfig = {
+  apiKey: "AIzaSyDO-fBwp3X7pdEA_FJcfyKW0PEHu3asfX0",
+  authDomain: "otp-login-75f51.firebaseapp.com",
+  projectId: "otp-login-75f51"
+};
+
+firebase.initializeApp(firebaseConfig);
+var auth = firebase.auth();
+
+function toggleMenu(){
+  document.getElementById("navLinks").classList.toggle("active");
+}
+
+function toggleTheme(){
+  document.body.classList.toggle("light");
+}
+
+function logout(){
+  auth.signOut();
+  location.href="index.html";
+}
+
+function openContact(){
+  document.getElementById("contactModal").style.display="flex";
+}
+
+function closeContact(){
+  document.getElementById("contactModal").style.display="none";
+}
+
+function sendMail(e){
+  e.preventDefault();
+  let name=cname.value;
+  let email=cemail.value;
+  let msg=cmsg.value;
+  window.location.href=`mailto:shivamjais.op09@gmail.com?subject=Contact from ${name}&body=Email:${email}%0D%0A%0D%0A${msg}`;
+  closeContact();
+}
+
+particlesJS("particles-js",{
+particles:{number:{value:60},color:{value:"#4facfe"},move:{speed:2},line_linked:{enable:true,color:"#4facfe"}}
+});
+
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("sw.js")
+      .then(() => console.log("PWA Ready"))
+      .catch(err => console.log(err));
+  });
+}
+</script>
+</body>
+</html>

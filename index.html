@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#4facfe">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta charset="UTF-8">
+<title>OTP Login</title>
+<link rel="icon" type="image/png" href="login.png">
+
+
+<style>
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  body {
+    height: 100vh;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Background glow */
+  body::before,
+  body::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #00f2fe, #4facfe);
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.5;
+  }
+
+  body::before { top: -80px; left: -80px; }
+  body::after { bottom: -80px; right: -80px; }
+
+  /* Glass Card */
+  .card {
+    position: relative;
+    width: 360px;
+    padding: 35px 30px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.25);
+    box-shadow: 0 25px 40px rgba(0,0,0,0.4);
+    text-align: center;
+    color: white;
+  }
+
+  h2 { margin-bottom: 20px; }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    color: white;
+  }
+
+  input::placeholder { color: rgba(255,255,255,0.7); }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #00f2fe, #4facfe);
+    color: #0f2027;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  button:hover { opacity: 0.9; }
+
+  #recaptcha-container { margin: 10px 0; }
+
+  /* Loader */
+  .loader {
+    display: none;
+    margin: 10px auto;
+    width: 30px;
+    height: 30px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top: 4px solid #4facfe;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Popup */
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: rgba(0,0,0,0.9);
+    padding: 25px 40px;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    transition: 0.4s;
+    z-index: 999;
+  }
+
+  .popup.active {
+    transform: translate(-50%, -50%) scale(1);
+  }
+/* Page Fade Animation */
+body {
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+}
+
+body.loaded {
+  opacity: 1;
+}
+
+body.fade-out {
+  opacity: 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <h2>OTP Login 🔐</h2>
+  <input type="text" id="name" placeholder="Enter Your Name">
+  <input type="text" id="phone" placeholder="+91XXXXXXXXXX">
+
+  <div id="recaptcha-container"></div>
+
+  <button onclick="sendOTP()">Send OTP</button>
+
+  <div class="loader" id="loader"></div>
+
+  <input type="text" id="otp" placeholder="Enter OTP">
+
+  <button onclick="verifyOTP()">Verify OTP</button>
+
+</div>
+
+<!-- Popup -->
+<div class="popup" id="popup">✅ Login Successful</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+
+  var firebaseConfig = {
+    apiKey: "AIzaSyDO-fBwp3X7pdEA_FJcfyKW0PEHu3asfX0",
+    authDomain: "otp-login-75f51.firebaseapp.com",
+    projectId: "otp-login-75f51",
+    storageBucket: "otp-login-75f51.firebasestorage.app",
+    messagingSenderId: "931034940344",
+    appId: "1:931034940344:web:072fb650d656c38da0054d",
+    measurementId: "G-ZTZYXYLE8C"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  var auth = firebase.auth();
+  var db = firebase.firestore();
+
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+    'recaptcha-container',
+    { size: 'normal' }
+  );
+
+  var loader = document.getElementById("loader");
+  var popup = document.getElementById("popup");
+
+  function showPopup(text) {
+    popup.innerText = text;
+    popup.classList.add("active");
+
+    setTimeout(() => {
+      popup.classList.remove("active");
+    }, 2000);
+  }
+function formatPhoneNumber(input) {
+
+  // Remove spaces, dashes, brackets etc
+  let phone = input.replace(/\D/g, "");
+
+  // If starts with 0 → remove it
+  if (phone.startsWith("0")) {
+    phone = phone.substring(1);
+  }
+
+  // If starts with 91 and length is 12 → add +
+  if (phone.startsWith("91") && phone.length === 12) {
+    phone = "+" + phone;
+  }
+
+  // If only 10 digits → add +91
+  if (phone.length === 10) {
+    phone = "+91" + phone;
+  }
+
+  // If already has +91
+  if (phone.length === 13 && phone.startsWith("91")) {
+    phone = "+" + phone;
+  }
+
+  return phone;
+}
+  function sendOTP() {
+
+var rawNumber = document.getElementById("phone").value;
+
+var phoneNumber = formatPhoneNumber(rawNumber);
+    loader.style.display = "block";
+
+    auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+      .then(function (confirmationResult) {
+
+        window.confirmationResult = confirmationResult;
+
+        loader.style.display = "none";
+
+        showPopup("📩 OTP Sent");
+
+      }).catch(function (error) {
+
+        loader.style.display = "none";
+
+        alert(error.message);
+
+      });
+  }
+
+function verifyOTP() {
+
+  var code = document.getElementById("otp").value;
+
+  loader.style.display = "block";
+
+  window.confirmationResult.confirm(code)
+    .then(function (result) {
+
+      var user = result.user;
+      var name = document.getElementById("name").value;
+
+      // Save user to Firestore
+    db.collection("users").doc(user.uid).set({
+
+  name: name,
+  phone: user.phoneNumber,
+  uid: user.uid,
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+
+}, { merge: true })
+
+      .then(function () {
+
+        loader.style.display = "none";
+
+        showPopup(" Login Success");
+
+        setTimeout(() => {
+          goToPage("dashboard.html");
+        }, 1500);
+
+      });
+
+    })
+    .catch(function () {
+
+      loader.style.display = "none";
+
+      alert("Wrong OTP ❌");
+
+    });
+}
+
+</script>
+<script>
+/* Page Fade In */
+window.addEventListener("load", () => {
+  document.body.classList.add("loaded");
+});
+
+/* Page Fade Out */
+function goToPage(url){
+  document.body.classList.add("fade-out");
+
+  setTimeout(() => {
+    window.location.href = url;
+  }, 400);
+}
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("sw.js")
+      .then(() => console.log("PWA Ready"))
+      .catch(err => console.log(err));
+  });
+}
+</script>
+</body>
+</html>
