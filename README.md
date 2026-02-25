@@ -62,3 +62,31 @@ Includes:
 ---
 
 ## 📂 Project Structure
+
+OTP_AUTH_APP/
+│
+├── index.html # Login Page
+├── dashboard.html # User Dashboard
+├── profile.html # Profile Page
+├── about.html # About Page
+├── admin.html # Admin Panel
+│
+├── manifest.json # PWA Manifest
+├── sw.js # Service Worker
+│
+├── icon-192.png # App Icon (Small)
+├── icon-512.png # App Icon (Large)
+│
+├── login.png # Page Icon
+├── README.md
+└── LICENSE
+
+
+---
+
+## ⚙️ Installation (Local Setup)
+
+1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/Shivam0400/OTP_AUTH_APP.git
